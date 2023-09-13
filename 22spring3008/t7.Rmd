@@ -1,0 +1,30 @@
+---
+title: "t7"
+author: "YX"
+date: "2022/3/22"
+output: html_document
+---
+![unchanged image](flower.png)
+```{r}
+data(iris)
+data <- iris
+names(data)
+
+str(data)
+model <- lm(Sepal.Length ~ ., data = data)
+summary(model)
+
+
+model$contrasts
+model1 <- lm(Sepal.Length ~ ., data = data, contrasts = list(Species = "contr.sum"))
+summary(model1)
+model1$coefficients["(Intercept)"]+model1$coefficients["Species1"]
+model$coefficients["(Intercept)"]
+
+model1$coefficients["(Intercept)"]+model1$coefficients["Species2"]
+model$coefficients["(Intercept)"]+model$coefficients["Speciesversicolor"]
+
+model1$coefficients["(Intercept)"]-(model1$coefficients["Species1"] + model1$coefficients["Species2"])
+model$coefficients["(Intercept)"]+model$coefficients["Speciesvirginica"]
+
+```

@@ -1,0 +1,203 @@
+---
+title: "Tutorial1"
+author: "YX"
+output: html_document
+---
+
+<style type="text/css">
+  body{
+  font-size: 12pt;
+}
+</style>
+
+### This is for tutorial 1 of STAT 3008, spring 2022^[Thanks for previous TA's resources. This file refers to Ms. YIN Jie's tutorial notes in fall, 2021]
+
+## R installation
+
+R is available for Linux, [MacOS](https://cran.r-project.org/bin/macosx/), and [Windows](https://cran.r-project.org/bin/windows/base/).
+
+Also, personally recommend to use [RStudio](https://www.rstudio.com/products/rstudio/) as R code editor. Please be sure to have R installed first because RStudio itself does not contain R. 
+
+## R introduction
+
+### Basics and Settings
+
+R is a dialect of the S language. It is a case-sensitive, interpreted language. You can enter commands one at a time at the command prompt (>) or run a set of commands from a source file.
+
+After opening R, make sure you are under a correct working directory.**Note that the path in R is NOT in the same format as usually shown in WINDOWS system.**.
+```{r, eval=FALSE}
+getwd()
+setwd("Drive:/path/to/your/working/directory")
+```
+```{r, include=FALSE}
+#getwd()
+setwd("D:/academic/course/22spring/3008/t1")
+```
+
+First, to open or create scripts, click File -- New script/Open script.
+Then type your code in the Script window.
+To run some code, coding -- select lines -- Ctrl+R or coding -- select lines -- right-click -- click Run line.
+
+Install packages we need.
+```{r, message=FALSE}
+if(!require(alr4)){
+  install.packages("alr4")
+}
+library(alr4)
+```
+
+We always have official manual for reference. Try the following commands for assistance from built-in help system.
+
+```{r, eval=FALSE}
+help.start() # general help
+help(factorial) # help about function factorial
+?factorial # same thing
+apropos("factorial") # list all functions containing string factorial
+example(factorial) # show an example of function factorial
+```
+
+## Operation and command
+
+To import data, we have different functions to deal with different situations.
+
+```{r , eval=FALSE}
+data(package = "alr4")
+data(ais)
+data <- read.table("path/to/your/dataset", header = TRUE)
+```
+
+`header=TRUE` indicates that the file contains the names of the variables as its first line.
+By default, header=FALSE in read.table().
+Also, take a look at function 
+`read.csv` for comma separated file(.csv).
+
+
+### Vectors and matrices
+
+Using the colon `:` operator, `seq`, `c`, and `rep`
+```{r}
+4:1
+seq(1, 4, by = 0.5)
+seq(1, 4, length.out = 6)
+c(1,3,5,6)
+rep(1:3, times=2)
+rep(1:3, each=2)
+rbind(1:3, 4:6)
+cbind(1:2, 3:4)
+(mat1 <- matrix(1:6, nrow = 3, ncol = 2))
+(mat2 <- matrix(1:6, nrow = 3, ncol = 2, byrow = TRUE))
+mat1 + 1 #broadcasting
+mat1^2
+mat1 + mat2
+mat1 * mat2
+mat1 %*% t(mat2)
+
+```
+
+### Extract elements and indexing
+```{r}
+x=seq(1,20,by=2) # a vector (1,3,5,7,9,11,13,15,17,19)
+x[1] # 1st entry: 1
+x[2:4] # 2nd-4th entries: 3 5 7
+x[c(1,3,8,9)] # 1st,3rd,8th & 9th entries: 1 5 15 17
+x[-1] # entries excluding 1st: 3 5 7 9 11 13 15 17 19
+x>5&x<10 # a logical vector (F,F,F,T,T,F,F,F,F,F)
+x[x>5&x<10] # entries of x where condition is TRUE: 7 9
+```
+```{r}
+G=matrix(1:12,nrow=4,byrow=T) # a 4X3 matrix with 1:12 arranged by row
+G[3,2] # (3,2) entry: 8
+G[4,] # 4th row: 10 11 12
+G[,1] # 1st column: 1 4 7 10
+G[c(2,4),3]
+```
+
+## R functions
+
+Length of an object: `length(x)`.
+
+Sum of values in a vector: `sum(x)`.
+
+Dimension of a matrix: `dim(x)`.
+
+Sample mean: `mean(x)`.
+
+Median: `median(x)`.
+
+Sample quantiles: `quantile(x, probs=)`.
+
+Sample variance / covariance matrix: `var(x)`.
+
+Sample covariance of x and y: `cov(x,y)`.
+
+Sample correlation between x and y: `cor(x,y)`.
+
+Standard deviation: `sd(x)`.
+
+Object summaries: `summary(x)`.
+
+Trace of a matrix: `tr(x)`.
+
+Transpose of a matrix: `t(x)`.
+
+Inverse of a matrix: `solve(x)`.
+
+pdf of Uniform(1,3) at 1.5: `dunif(1.5,1,3)`.
+
+0.95 quantile (0.05 upper quantile) of N(0,1): `qnorm(0.95)` .
+
+p-value of a chi-square statistic 3.84 with df=1: `1 - pchisq(3.84,1)`.
+
+Generate 1000 random numbers from N(2,16): `rnorm(1000,2,4)`.
+
+### User custom functions
+```{r, eval=FALSE}
+FunctionName <- function(arg1, arg2, ...) {
+   Function body
+}
+```
+Inside the function body, you could use syntax like if, if...else, for, while, break, next, return to construct your function.
+```{r}
+my_add <- function(x, y){
+    z <- x+y
+    return(z)
+}
+my_add(3,4)
+```
+
+### Regression
+The data set consists of variables blood pressure, age, weight and resting pulse rate.
+(1) Fit a linear regression model for blood pressure on age, weight and resting pulse rate.
+(2) Find the residual sum of squares RSS.
+(3) Find the coefficient of determination R2.
+(4) Test whether the effect of resting pulse rate is significant by constructing an ANOVA table.
+```{r, eval=FALSE}
+dat2=read.csv("BloodPressure.csv")
+y=dat2$Blood.pressure # extract the variables
+x1=dat2$Age
+x2=dat2$Weight
+x3=dat2$Pulse
+fit=lm(y ~ x1+x2+x3) # fit a linear model
+summary(fit) # summary of the model
+rss=sum(fit$residuals∧2)
+rss
+summary(fit)$r.squared
+fit2=lm(y ~ x1+x2) # a new model without x3
+anova(fit2,fit)
+```
+
+## Practice
+1. 
+
+(a) Use the seq and rep functions to construct the following vector u with 18 elements.
+u = (1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6)
+
+b) Compute the sample mean and sample variance of u1, u2, ..., u18 based on the following expressions:
+```{r, eval=FALSE}
+ubar <–sum(u)/length(u)
+ubar
+sum((u-ubar)∧2)/ (length(u)-1)
+```
+(c) Show that applying the mean and var functions on u would provide the same results as in part (b).
+
+(d) Based on the results in(a), construct the matrix A in R with dimension 3*6.
